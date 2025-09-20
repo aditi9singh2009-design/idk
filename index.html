@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>You've been hacked — surprise!</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --accent:#ff6b6b;
+      --accent2:#7c3aed;
+      --card:#0b1220;
+      --glass: rgba(255,255,255,0.04);
+    }
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    html,body,#app{height:100%;margin:0}
+    body{background:linear-gradient(180deg,#020617 0%, #07112a 60%, #0f1724 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center}
+    .screen{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100vh;padding:24px;transition:all .6s cubic-bezier(.2,.9,.3,1);}
+
+    /* Hacked screen */
+    .hacked h1{font-size:clamp(28px,6vw,64px);letter-spacing:1px;margin:0 0 12px;color:var(--accent)}
+    .hacked p{opacity:.9;margin:0 0 24px;font-size:18px}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:12px;background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;color:white;font-weight:700;cursor:pointer;box-shadow:0 8px 30px rgba(124,58,237,.16);transform:translateZ(0)}
+    .btn.secondary{background:transparent;border:2px solid rgba(255,255,255,.06);box-shadow:none;color:#e6eef8}
+
+    /* Cards + big panel */
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:16px;padding:28px;min-width:320px;max-width:880px;text-align:center;backdrop-filter:blur(6px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02), 0 10px 30px rgba(2,6,23,0.6)}
+
+    /* Today's special */
+    .special h2{margin:0 0 18px;font-size:28px}
+    .choices{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+    .choice{padding:14px 18px;border-radius:12px;background:var(--glass);min-width:220px;cursor:pointer;border:1px solid rgba(255,255,255,0.03)}
+
+    /* Birthday hunt */
+    .hunt p{max-width:720px}
+    .boxes{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:center}
+    .box{width:120px;height:120px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;cursor:pointer;border:2px dashed rgba(255,255,255,0.03)}
+
+    /* Final message */
+    .final{padding:36px;max-width:900px;text-align:left}
+    .final h1{font-size:36px;margin:0 0 12px;color:gold}
+    .message{white-space:pre-wrap;line-height:1.5;font-size:16px;margin-top:14px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+
+    /* decorative */
+    .logo{position:fixed;left:18px;top:18px;font-weight:800;letter-spacing:1px}
+    .small{font-size:12px;opacity:.7}
+
+    /* confetti */
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+    .confetti i{position:absolute;display:block;width:10px;height:18px;opacity:0;transform:translateY(-20vh) rotate(0deg);animation:fall linear forwards}
+    @keyframes fall{to{transform:translateY(120vh) rotate(540deg);opacity:1}}
+
+    /* responsive tweaks */
+    @media (max-width:520px){.box{width:92px;height:92px;font-size:12px}.choice{min-width:160px}}
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="logo small">✨ cute-surprise</div>
+
+    <!-- Screen 1: hacked -->
+    <section id="s1" class="screen hacked">
+      <div class="panel">
+        <h1>YOU'VE BEEN HACKED</h1>
+        <p>All your secrets are safe. (Mostly memes.)</p>
+        <button id="existBtn" class="btn">exist</button>
+      </div>
+    </section>
+
+    <!-- Screen 2: what's special today -->
+    <section id="s2" class="screen" style="display:none">
+      <div class="panel special">
+        <h2>what's special today?</h2>
+        <div class="choices">
+          <div class="choice" data-topic="dussehra">start of dusshera vacation</div>
+          <div class="choice" data-topic="peace">international day of peace</div>
+          <div class="choice" data-topic="alzheimers">World Alzheimer's Day</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 3: hunt -->
+    <section id="s3" class="screen" style="display:none">
+      <div class="panel hunt">
+        <h2>no u're wrong — today's your bday</h2>
+        <p>search for ur bday message in the 5given boxes</p>
+        <div class="boxes" id="boxes">
+          <div class="box" data-index="1">box 1</div>
+          <div class="box" data-index="2">box 2</div>
+          <div class="box" data-index="3">box 3</div>
+          <div class="box" data-index="4">box 4</div>
+          <div class="box" data-index="5">box 5</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 4: final message -->
+    <section id="s4" class="screen" style="display:none;align-items:flex-start;justify-content:flex-start;padding:48px 24px">
+      <div class="panel final">
+        <h1>Happy Birthday shreyall 🎉</h1>
+        <div class="message" id="finalMessage">Loading...</div>
+      </div>
+    </section>
+
+    <!-- confetti container -->
+    <div class="confetti" id="confetti"></div>
+  </div>
+
+  <script>
+    // elements
+    const s1 = document.getElementById('s1');
+    const s2 = document.getElementById('s2');
+    const s3 = document.getElementById('s3');
+    const s4 = document.getElementById('s4');
+    const existBtn = document.getElementById('existBtn');
+    const choices = document.querySelectorAll('.choice');
+    const boxes = document.querySelectorAll('.box');
+    const finalMessage = document.getElementById('finalMessage');
+    const confettiContainer = document.getElementById('confetti');
+
+    // initial interactions
+    existBtn.addEventListener('click', ()=>{
+      s1.style.display='none';
+      s2.style.display='flex';
+      s2.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'translateY(0)'}],{duration:420,easing:'ease-out'});
+    });
+
+    choices.forEach(c=>c.addEventListener('click', ()=>{
+      s2.style.display='none';
+      s3.style.display='flex';
+      s3.animate([{opacity:0,transform:'scale(.98)'},{opacity:1,transform:'scale(1)'}],{duration:420,easing:'ease-out'});
+    }));
+
+    // clicking boxes
+    boxes.forEach(b=>b.addEventListener('click', ()=>{
+      const idx = parseInt(b.dataset.index,10);
+      if(idx === 3){
+        // show final screen and message
+        s3.style.display='none';
+        s4.style.display='flex';
+        playConfetti();
+        finalMessage.textContent = `Happy Birthday shreyall. It’s crazy how it’s only been a couple of months since we met, yet you’ve already become such an important part of my life. You’ve been there for me in ways I didn’t expect ! giving me advice when I needed it, listening to me when I had no one else, and just making everything feel lighter.\n\nYou’re honestly one of the sweetest and smartest people I know, and I can’t thank you enough for the support and comfort you’ve given me in such a short time. I feel so lucky to have crossed paths with you, and I hope this upcoming years bring you all the happiness you truly deserve 🫶💫ALSO I HOPE U GET INTO DU mannn, u deserve the bestt`;
+        // simple animation
+        s4.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}],{duration:420,easing:'ease-out'});
+      } else {
+        // small shake to indicate wrong box
+        b.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:360});
+      }
+    }));
+
+    // confetti generator (lightweight)
+    function playConfetti(){
+      // create many small pieces
+      const colors = ['#ff595e','#ffca3a','#8ac926','#1982c4','#6a4c93'];
+      for(let i=0;i<60;i++){
+        const el = document.createElement('i');
+        el.style.left = Math.random()*100 + 'vw';
+        el.style.top = (-10 - Math.random()*10) + 'vh';
+        el.style.background = colors[Math.floor(Math.random()*colors.length)];
+        el.style.width = (6 + Math.random()*14) + 'px';
+        el.style.height = (8 + Math.random()*18) + 'px';
+        el.style.opacity = Math.random()*.9 + .3;
+        el.style.transform = `translateY(-20vh) rotate(${Math.random()*360}deg)`;
+        el.style.animationDuration = (2 + Math.random()*2) + 's';
+        el.style.animationDelay = (Math.random()*0.4) + 's';
+        confettiContainer.appendChild(el);
+        // remove later
+        setTimeout(()=>{el.remove()},5000 + Math.random()*2000);
+      }
+    }
+
+    // small enter key shortcut: from hacked -> s2
+    document.addEventListener('keydown',(e)=>{
+      if(e.key === 'Enter' && s1.style.display !== 'none') existBtn.click();
+    });
+  </script>
+</body>
+</html>
